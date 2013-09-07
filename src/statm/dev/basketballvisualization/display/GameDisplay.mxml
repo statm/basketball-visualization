@@ -11,10 +11,8 @@
 			import statm.dev.basketballvisualization.data.entities.Game;
 			import statm.dev.basketballvisualization.data.entities.PlayerType;
 			import statm.dev.basketballvisualization.events.GameEvent;
-			import statm.dev.basketballvisualization.utils.StringUtils;
 			import statm.dev.basketballvisualization.utils.log;
 
-            [Bindable]
             private var game:Game;
 
             public function setGame(game:Game):void
@@ -51,9 +49,11 @@
 			}
         ]]>
     </fx:Script>
-	
+
+	<!-- court -->
 	<display:BasketballCourt/>
 
+	<!-- game objects -->
     <display:RefereeDisplay id="ref0"/>
     <display:RefereeDisplay id="ref1"/>
     <display:RefereeDisplay id="ref2"/>
@@ -71,11 +71,4 @@
     <display:PlayerDisplay id="away4"/>
 	
     <display:BallDisplay id="ball"/>
-	
-    <s:Label 
-        top="-22"
-        color="#666666"
-        fontSize="18"
-        horizontalCenter="0"
-        text="{StringUtils.formatGameClock(game.gameClock) + ' (frame ' + game.playhead + '/' + game.totalFrame + ')'}"/>
 </s:Group>

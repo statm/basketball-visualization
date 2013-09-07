@@ -8,6 +8,14 @@ package statm.dev.basketballvisualization.events
 
         public static const UPDATE:String = "update";
 
+        public static const PLAY:String = "play";
+
+        public static const STOP:String = "stop";
+
+        public static const SCRUB_START:String = "scrubStart";
+
+        public static const SCRUB_END:String = "scrubEnd";
+
         public function GameEvent(type:String)
         {
             super(type);

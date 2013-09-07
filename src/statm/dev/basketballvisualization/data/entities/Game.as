@@ -2,7 +2,7 @@ package statm.dev.basketballvisualization.data.entities
 {
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
-
+    
     import statm.dev.basketballvisualization.data.io.GameReader;
     import statm.dev.basketballvisualization.events.GameEvent;
     import statm.dev.basketballvisualization.events.GameReaderEvent;
@@ -10,6 +10,10 @@ package statm.dev.basketballvisualization.data.entities
 
     [Event(name = "ready", type = "statm.dev.basketballvisualization.events.GameEvent")]
     [Event(name = "update", type = "statm.dev.basketballvisualization.events.GameEvent")]
+    [Event(name = "play", type = "statm.dev.basketballvisualization.events.GameEvent")]
+    [Event(name = "stop", type = "statm.dev.basketballvisualization.events.GameEvent")]
+    [Event(name = "scrubStart", type = "statm.dev.basketballvisualization.events.GameEvent")]
+    [Event(name = "scrubEnd", type = "statm.dev.basketballvisualization.events.GameEvent")]
 
     public class Game extends EventDispatcher
     {
@@ -113,10 +117,19 @@ package statm.dev.basketballvisualization.data.entities
         //----------------------------------
         //  loading
         //----------------------------------
+        private var _isReady:Boolean = false;
+
+        public function get isReady():Boolean
+        {
+            return _isReady;
+        }
+
         private var reader:GameReader;
 
         private function initReader():void
         {
+            _isReady = false;
+
             reader = new GameReader(dataURL);
             reader.addEventListener(GameReaderEvent.PROGRESS, reader_progressHandler);
             reader.addEventListener(GameReaderEvent.COMPLETE, reader_completeHandler);
@@ -135,7 +148,7 @@ package statm.dev.basketballvisualization.data.entities
         private function reader_completeHandler(event:GameReaderEvent):void
         {
             parseEntries(reader.getEntries());
-
+            _isReady = true;
             this.dispatchEvent(new GameEvent(GameEvent.READY));
         }
 
@@ -217,7 +230,41 @@ package statm.dev.basketballvisualization.data.entities
 
 
         //----------------------------------
-        //  playback
+        //  update
+        //----------------------------------
+        private function updateGameObjects():void
+        {
+            _redrawNeeded = false;
+
+            for each (var player:Player in players)
+            {
+                _redrawNeeded = player.update(playhead) || _redrawNeeded;
+            }
+
+            ball.update(playhead);
+
+            for each (var ref:Referee in referees)
+            {
+                ref.update(playhead);
+            }
+
+            this.dispatchEvent(new GameEvent(GameEvent.UPDATE));
+        }
+
+
+        //----------------------------------
+        //  redrawNeeded
+        //----------------------------------
+        private var _redrawNeeded:Boolean = false;
+
+        public function get redrawNeeded():Boolean
+        {
+            return _redrawNeeded;
+        }
+
+
+        //----------------------------------
+        //  playback props
         //----------------------------------
         private var _startTime:Number = -1;
 
@@ -258,10 +305,6 @@ package statm.dev.basketballvisualization.data.entities
             _totalFrame = value;
         }
 
-
-        //----------------------------------
-        //  playhead
-        //----------------------------------
         private var _playhead:int;
 
         [Bindable]
@@ -270,13 +313,14 @@ package statm.dev.basketballvisualization.data.entities
             return _playhead;
         }
 
-        private function set playhead(value:int):void
+        public function set playhead(value:int):void
         {
             _playhead = value;
 
             if (_playhead > _totalFrame)
             {
                 _playhead = 0;
+				stop();
             }
 
             if (!isNaN(gameClock) && !gameClockList[playhead])
@@ -296,36 +340,57 @@ package statm.dev.basketballvisualization.data.entities
 
 
         //----------------------------------
-        //  update
+        //  playback control
         //----------------------------------
-        private function updateGameObjects():void
+        private var _isPlaying:Boolean = false;
+
+		[Bindable]
+        public function get isPlaying():Boolean
         {
-            _redrawNeeded = false;
+            return _isPlaying;
+        }
+		
+		private function set isPlaying(value:Boolean):void
+		{
+			_isPlaying = value;
+		}
 
-            for each (var player:Player in players)
+        private var _speed:int = 1;
+
+        private var _isScrubbing:Boolean = false;
+
+        public function pulse():void
+        {
+            if (_isPlaying && !_isScrubbing)
             {
-                _redrawNeeded = player.update(playhead) || _redrawNeeded;
+                playhead += _speed;
             }
-
-            ball.update(playhead);
-
-            for each (var ref:Referee in referees)
-            {
-                ref.update(playhead);
-            }
-
-            this.dispatchEvent(new GameEvent(GameEvent.UPDATE));
         }
 
-
-        //----------------------------------
-        //  redrawNeeded
-        //----------------------------------
-        private var _redrawNeeded:Boolean = false;
-
-        public function get redrawNeeded():Boolean
+        public function play(speed:int = 1):void
         {
-            return _redrawNeeded;
+            if (!_isReady || _isScrubbing)
+            {
+                return;
+            }
+
+            _speed = speed;
+            isPlaying = true;
+        }
+
+        public function stop():void
+        {
+            isPlaying = false;
+        }
+
+        public function startScrub():void
+        {
+            _isScrubbing = true;
+        }
+
+        public function stopScrub():void
+        {
+            _isScrubbing = false;
         }
     }
 }
