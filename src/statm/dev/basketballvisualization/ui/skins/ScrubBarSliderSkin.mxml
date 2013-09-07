@@ -11,95 +11,127 @@
 -->
 
 <!--- The default skin class for the Spark HSlider component. The thumb and track skins are defined by the
-HSliderThumbSkin and HSliderTrackSkin classes, respectively.  
+HSliderThumbSkin and HSliderTrackSkin classes, respectively.
 
        @see spark.components.HSlider
        @see spark.skins.spark.HSliderThumbSkin
        @see spark.skins.spark.HSliderTrackSkin
-                
+
       @langversion 3.0
       @playerversion Flash 10
       @playerversion AIR 1.5
       @productversion Flex 4
 -->
-<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
-    xmlns:fb="http://ns.adobe.com/flashbuilder/2009" minHeight="11" alpha.disabled="0.5">
+<s:SparkSkin 
+    minHeight="11"
+    xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+    alpha.disabled="0.5">
 
     <fx:Metadata>
-    <![CDATA[ 
+        <![CDATA[ 
         /** 
          * @copy spark.skins.spark.ApplicationSkin#hostComponent
          */
-        [HostComponent("spark.components.HSlider")]
+        [HostComponent("statm.dev.basketballvisualization.ui.ScrubBar")]
     ]]>
-    </fx:Metadata> 
-    
-	<!--
-		NOTE: this skin file contains sub-parts that may continue to react to
-		Style code.  To remove this behavior create new copies of those skins
-		and remove the styles.
-	-->
+    </fx:Metadata>
+
+    <!--
+        NOTE: this skin file contains sub-parts that may continue to react to
+        Style code.  To remove this behavior create new copies of those skins
+        and remove the styles.
+    -->
     <fx:Script>
-        /**
-         *  @private
-         */  
-        override protected function measure() : void
-        {
-            // Temporarily move the thumb to the left of the Slider so measurement
-            // doesn't factor in its x position. This allows resizing the
-            // HSlider to less than 100px in width. 
-            var thumbPos:Number = thumb.getLayoutBoundsX();
-            thumb.setLayoutBoundsPosition(0, thumb.getLayoutBoundsY());
-            super.measure();
-            thumb.setLayoutBoundsPosition(thumbPos, thumb.getLayoutBoundsY());
-        }
+        <![CDATA[
+			import statm.dev.basketballvisualization.utils.VisualizationUtils;
+
+            /**
+            *  @private
+            */
+            override protected function measure():void
+            {
+                // Temporarily move the thumb to the left of the Slider so measurement
+                // doesn't factor in its x position. This allows resizing the
+                // HSlider to less than 100px in width.
+                var thumbPos:Number = thumb.getLayoutBoundsX();
+                thumb.setLayoutBoundsPosition(0, thumb.getLayoutBoundsY());
+                super.measure();
+                thumb.setLayoutBoundsPosition(thumbPos, thumb.getLayoutBoundsY());
+            }
+        ]]>
     </fx:Script>
-    
+
     <s:states>
-        <s:State name="normal" />
-        <s:State name="disabled" />
+        <s:State name="normal"/>
+        <s:State name="disabled"/>
     </s:states>
-    
+
     <fx:Declarations>
-        <!--- The tooltip used in the mx.controls.Slider control. 
+        <!--- The tooltip used in the mx.controls.Slider control.
                To customize the DataTip's appearance, create a custom HSliderSkin class.-->
-        <fx:Component id="dataTip">     
-           <s:DataRenderer minHeight="24" minWidth="40" y="-34">  
-              <s:Rect top="0" left="0" right="0" bottom="0">
+        <fx:Component id="dataTip">
+            <s:DataRenderer 
+                y="-34"
+                minHeight="24"
+                minWidth="40">
+                <s:Rect 
+                    left="0" right="0" top="0" bottom="0">
                     <s:fill>
-                        <s:SolidColor color="0x000000" alpha=".9"/>
+                        <s:SolidColor 
+                            color="0x000000"
+                            alpha=".9"/>
                     </s:fill>
                     <s:filters>
-                        <s:DropShadowFilter angle="90" color="0x999999" distance="3"/>
+                        <s:DropShadowFilter 
+                            color="0x999999"
+                            angle="90"
+                            distance="3"/>
                     </s:filters>
                 </s:Rect>
-                <s:Label id="labelDisplay" text="{data}"
-                         horizontalCenter="0" verticalCenter="1"
-                         left="5" right="5" top="5" bottom="5"
-                         textAlign="center" verticalAlign="middle"
-                         fontWeight="normal" color="white" fontSize="11">
+                <s:Label id="labelDisplay"
+                    left="5" right="5" top="5" bottom="5"
+                    color="white"
+                    fontSize="11"
+                    fontWeight="normal"
+                    horizontalCenter="0"
+                    textAlign="center"
+                    verticalAlign="middle"
+                    verticalCenter="1"
+                    text="{data}">
                 </s:Label>
             </s:DataRenderer>
-       </fx:Component>
+        </fx:Component>
     </fx:Declarations>
-    
-    <!--- The default skin class is HSliderTrackSkin. 
+
+    <!--- The default skin class is HSliderTrackSkin.
             @copy spark.components.supportClasses.TrackBase#track
             @see spark.skins.spark.HSliderTrackSkin -->
-    <s:Button id="track" left="0" right="0" top="0" bottom="0" minWidth="33" width="100" 
-              tabEnabled="false"
-              skinClass="statm.dev.basketballvisualization.ui.skins.ScrubBarSliderTrackSkin" />
-	
-	<s:Rect top="1" bottom="1" left="1" width="{thumb.x}">
-		<s:fill>
-			<s:SolidColor color="#4EA6EA"/>
-		</s:fill>
-	</s:Rect>
-              
+    <s:Button id="track"
+        width="100"
+        left="0" right="0" top="0" bottom="0"
+        minWidth="33"
+        tabEnabled="false"
+        skinClass="statm.dev.basketballvisualization.ui.skins.ScrubBarSliderTrackSkin"/>
+
+    <s:Rect 
+        width="{thumb.x}"
+        left="1" top="1" bottom="1">
+        <s:fill>
+            <s:SolidColor color="#4EA6EA"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:BitmapImage 
+        left="1" right="1" top="1" bottom="1"
+        source="{VisualizationUtils.generateTimeoutMap(hostComponent.game)}"/>
+
     <!--- The default skin class is HSliderThumbSkin.
-            @copy spark.components.supportClasses.TrackBase#thumb 
+            @copy spark.components.supportClasses.TrackBase#thumb
             @see spark.skins.spark.HSliderThumbSkin -->
-    <s:Button id="thumb" top="0" bottom="0" 
-              tabEnabled="false"
-              skinClass="statm.dev.basketballvisualization.ui.skins.ScrubBarSliderThumbSkin" />
+    <s:Button id="thumb"
+        top="0" bottom="0"
+        tabEnabled="false"
+        skinClass="statm.dev.basketballvisualization.ui.skins.ScrubBarSliderThumbSkin"/>
 </s:SparkSkin>

@@ -2,7 +2,7 @@ package statm.dev.basketballvisualization.data.entities
 {
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
-    
+
     import statm.dev.basketballvisualization.data.io.GameReader;
     import statm.dev.basketballvisualization.events.GameEvent;
     import statm.dev.basketballvisualization.events.GameReaderEvent;
@@ -36,6 +36,7 @@ package statm.dev.basketballvisualization.data.entities
         private var referees:Vector.<Referee>;
         private var refDic:Dictionary;
         private var gameClockList:Array;
+        private var timeoutFrameList:Vector.<int>;
 
         private function initData():void
         {
@@ -45,6 +46,7 @@ package statm.dev.basketballvisualization.data.entities
             referees = new Vector.<Referee>();
             refDic = new Dictionary();
             gameClockList = new Array();
+            timeoutFrameList = new Vector.<int>();
         }
 
         public function getPlayer(index:int, type:int):Player
@@ -94,6 +96,11 @@ package statm.dev.basketballvisualization.data.entities
         public function getBall():Ball
         {
             return ball;
+        }
+
+        public function getTimeoutFrameList():Vector.<int>
+        {
+            return timeoutFrameList;
         }
 
 
@@ -160,6 +167,7 @@ package statm.dev.basketballvisualization.data.entities
         {
             var entryObj:Object;
             var frame:int;
+            var lastSavedFrame:int = 0;
             var playerObj:Object;
             var player:Player;
             var refObj:Object;
@@ -175,6 +183,13 @@ package statm.dev.basketballvisualization.data.entities
                 }
 
                 frame = (entryObj.time - startTime) / 40;
+
+                // timeouts
+                if (frame - lastSavedFrame > 1)
+                {
+                    timeoutFrameList.push(lastSavedFrame, frame);
+                }
+                lastSavedFrame = frame;
 
                 // home players
                 for each (playerObj in entryObj.home)
@@ -226,6 +241,8 @@ package statm.dev.basketballvisualization.data.entities
 
             endTime = entryObj.time;
             totalFrame = frame;
+
+            playhead = 0;
         }
 
 
@@ -305,7 +322,7 @@ package statm.dev.basketballvisualization.data.entities
             _totalFrame = value;
         }
 
-        private var _playhead:int;
+        private var _playhead:int = -1;
 
         [Bindable]
         public function get playhead():int
@@ -320,7 +337,7 @@ package statm.dev.basketballvisualization.data.entities
             if (_playhead > _totalFrame)
             {
                 _playhead = 0;
-				stop();
+                stop();
             }
 
             if (!isNaN(gameClock) && !gameClockList[playhead])
@@ -338,22 +355,28 @@ package statm.dev.basketballvisualization.data.entities
             updateGameObjects();
         }
 
+        public function isTimeout(frame:int = -1):Boolean
+        {
+            (frame == -1) && (frame = playhead);
+            return (gameClockList[frame] == null);
+        }
+
 
         //----------------------------------
         //  playback control
         //----------------------------------
         private var _isPlaying:Boolean = false;
 
-		[Bindable]
+        [Bindable]
         public function get isPlaying():Boolean
         {
             return _isPlaying;
         }
-		
-		private function set isPlaying(value:Boolean):void
-		{
-			_isPlaying = value;
-		}
+
+        private function set isPlaying(value:Boolean):void
+        {
+            _isPlaying = value;
+        }
 
         private var _speed:int = 1;
 

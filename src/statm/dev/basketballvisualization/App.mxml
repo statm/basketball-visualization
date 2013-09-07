@@ -33,7 +33,7 @@
         fontSize="18"
         horizontalCenter="0"
         verticalCenter="-270"
-        text="{StringUtils.formatGameClock(game.gameClock)
+        text="{(game.isTimeout() ? 'Timeout' : (StringUtils.formatGameClock(game.gameClock)))
 				+ ' (frame ' + game.playhead + '/' + game.totalFrame + ')'}"/>
 
     <!-- progress bar -->

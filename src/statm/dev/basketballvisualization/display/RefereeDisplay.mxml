@@ -31,12 +31,12 @@
 		</s:fill>
 	</s:Ellipse>
 	
-	<s:Label 
+	<!--<s:Label 
 		top="-15"
 		color="#FFFFFF"
 		fontWeight="bold"
 		horizontalCenter="0"
-		text="{'(' + referee.x.toFixed(0) + ',' + referee.y.toFixed(0) + ')'}"/>
+		text="{'(' + referee.x.toFixed(0) + ',' + referee.y.toFixed(0) + ')'}"/>-->
 	
 	<s:filters>
 		<s:GlowFilter color="#000000"/>

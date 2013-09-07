@@ -17,25 +17,37 @@
             {
                 this.game = game;
             }
+
+            private function scrubber_mouseDownHandler(event:MouseEvent):void
+            {
+                game.startScrub();
+                stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
+            }
+
+            private function stage_mouseUpHandler(event:MouseEvent):void
+            {
+                game.stopScrub();
+                stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
+            }
         ]]>
     </fx:Script>
 
     <ui:PlayButton id="playButton"
         width="60"
         verticalCenter="0"
-        click="game.isPlaying ? game.stop() : game.play(10)"
-		game="{game}"
+        click="game.isPlaying ? game.stop() : game.play(1)"
+        game="{game}"
         skinClass="statm.dev.basketballvisualization.ui.skins.PlayButtonSkin"/>
 
     <ui:ScrubBar id="scrubber"
+        height="20"
         left="70" right="0"
-		height="20"
         verticalCenter="0"
         maximum="{game.totalFrame}"
         minimum="0"
         stepSize="1"
         value="@{game.playhead}"
-        thumbPress="game.startScrub()"
-        thumbRelease="game.stopScrub()"
-		skinClass="statm.dev.basketballvisualization.ui.skins.ScrubBarSliderSkin"/>
+        mouseDown="scrubber_mouseDownHandler(event)"
+        game="{game}"
+        skinClass="statm.dev.basketballvisualization.ui.skins.ScrubBarSliderSkin"/>
 </s:Group>

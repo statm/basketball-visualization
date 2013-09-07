@@ -35,12 +35,12 @@
 
     </s:Ellipse>
 
-    <s:Label 
+    <!--<s:Label 
         top="-15"
         color="#FFFFFF"
         fontWeight="bold"
         horizontalCenter="0"
-        text="{'(' + player.x.toFixed(0) + ',' + player.y.toFixed(0) + ')'}"/>
+        text="{'(' + player.x.toFixed(0) + ',' + player.y.toFixed(0) + ')'}"/>-->
 
     <s:filters>
         <s:GlowFilter color="#000000"/>

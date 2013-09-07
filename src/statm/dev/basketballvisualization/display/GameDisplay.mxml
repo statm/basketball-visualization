@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group 
     width="940" height="500"
+    creationComplete="creationCompleteHandler(event)"
     xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:mx="library://ns.adobe.com/flex/mx"
@@ -8,67 +9,81 @@
 
     <fx:Script>
         <![CDATA[
-			import statm.dev.basketballvisualization.data.entities.Game;
-			import statm.dev.basketballvisualization.data.entities.PlayerType;
-			import statm.dev.basketballvisualization.events.GameEvent;
-			import statm.dev.basketballvisualization.utils.log;
+            import mx.events.FlexEvent;
+
+            import statm.dev.basketballvisualization.data.entities.Game;
+            import statm.dev.basketballvisualization.data.entities.PlayerType;
+            import statm.dev.basketballvisualization.events.GameEvent;
+            import statm.dev.basketballvisualization.utils.log;
 
             private var game:Game;
 
             public function setGame(game:Game):void
             {
                 this.game = game;
-				game.addEventListener(GameEvent.UPDATE, game_updateHandler);
+                game.addEventListener(GameEvent.UPDATE, game_updateHandler);
+                redraw();
             }
-			
-			private function game_updateHandler(event:GameEvent):void
-			{
-				game.redrawNeeded && redraw();
-			}
-			
-			private function redraw():void
-			{
-				log("redraw");
-				ref0.setReferee(game.getReferee(0));
-				ref1.setReferee(game.getReferee(1));
-				ref2.setReferee(game.getReferee(2));
-				
-				home0.setPlayer(game.getPlayer(0, PlayerType.HOME));
-				home1.setPlayer(game.getPlayer(1, PlayerType.HOME));
-				home2.setPlayer(game.getPlayer(2, PlayerType.HOME));
-				home3.setPlayer(game.getPlayer(3, PlayerType.HOME));
-				home4.setPlayer(game.getPlayer(4, PlayerType.HOME));
-				
-				away0.setPlayer(game.getPlayer(0, PlayerType.AWAY));
-				away1.setPlayer(game.getPlayer(1, PlayerType.AWAY));
-				away2.setPlayer(game.getPlayer(2, PlayerType.AWAY));
-				away3.setPlayer(game.getPlayer(3, PlayerType.AWAY));
-				away4.setPlayer(game.getPlayer(4, PlayerType.AWAY));
-				
-				ball.setBall(game.getBall());
-			}
+
+            private function game_updateHandler(event:GameEvent):void
+            {
+                game.redrawNeeded && redraw();
+            }
+
+            private function redraw():void
+            {
+                log("redraw");
+                ref0.setReferee(game.getReferee(0));
+                ref1.setReferee(game.getReferee(1));
+                ref2.setReferee(game.getReferee(2));
+
+                home0.setPlayer(game.getPlayer(0, PlayerType.HOME));
+                home1.setPlayer(game.getPlayer(1, PlayerType.HOME));
+                home2.setPlayer(game.getPlayer(2, PlayerType.HOME));
+                home3.setPlayer(game.getPlayer(3, PlayerType.HOME));
+                home4.setPlayer(game.getPlayer(4, PlayerType.HOME));
+
+                away0.setPlayer(game.getPlayer(0, PlayerType.AWAY));
+                away1.setPlayer(game.getPlayer(1, PlayerType.AWAY));
+                away2.setPlayer(game.getPlayer(2, PlayerType.AWAY));
+                away3.setPlayer(game.getPlayer(3, PlayerType.AWAY));
+                away4.setPlayer(game.getPlayer(4, PlayerType.AWAY));
+
+                ball.setBall(game.getBall());
+				barL.setBall(game.getBall());
+				barR.setBall(game.getBall());
+            }
+
+            private function creationCompleteHandler(event:FlexEvent):void
+            {
+//                this.transform.perspectiveProjection = new PerspectiveProjection();
+//                this.transform.perspectiveProjection.projectionCenter = new Point(this.width / 2 + this.x, this.height);
+            }
         ]]>
     </fx:Script>
 
-	<!-- court -->
-	<display:BasketballCourt/>
+    <!-- court -->
+    <display:BasketballCourt/>
 
-	<!-- game objects -->
+    <!-- game objects -->
     <display:RefereeDisplay id="ref0"/>
     <display:RefereeDisplay id="ref1"/>
     <display:RefereeDisplay id="ref2"/>
-	
+
     <display:PlayerDisplay id="home0"/>
     <display:PlayerDisplay id="home1"/>
     <display:PlayerDisplay id="home2"/>
     <display:PlayerDisplay id="home3"/>
     <display:PlayerDisplay id="home4"/>
-	
+
     <display:PlayerDisplay id="away0"/>
     <display:PlayerDisplay id="away1"/>
     <display:PlayerDisplay id="away2"/>
     <display:PlayerDisplay id="away3"/>
     <display:PlayerDisplay id="away4"/>
-	
+
     <display:BallDisplay id="ball"/>
+	
+	<display:BallHeightBar id="barL" left="54" bottom="0"/>
+	<display:BallHeightBar id="barR" right="54" bottom="0"/>
 </s:Group>

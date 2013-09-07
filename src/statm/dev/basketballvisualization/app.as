@@ -1,10 +1,11 @@
 import flash.events.Event;
+import flash.events.MouseEvent;
 
 import statm.dev.basketballvisualization.data.entities.Game;
 import statm.dev.basketballvisualization.events.GameEvent;
 import statm.dev.basketballvisualization.utils.log;
 
-public static const VERSION:String = "1.3";
+public static const VERSION:String = "1.4";
 
 [Bindable]
 public var game:Game;
@@ -14,11 +15,11 @@ private function init():void
     log("app init");
 
     game = new Game("cbg-basketball.json");
-    game.addEventListener(GameEvent.READY, currentGame_readyHandler);
+    game.addEventListener(GameEvent.READY, game_readyHandler);
     game.loadGame();
 }
 
-private function currentGame_readyHandler(event:GameEvent):void
+private function game_readyHandler(event:GameEvent):void
 {
     log("game ready");
 
