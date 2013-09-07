@@ -3,7 +3,7 @@
     backgroundColor="#DEDEDE"
 	frameRate="50"
     minHeight="600"
-    minWidth="955"
+    minWidth="1040"
     addedToStage="init()"
     xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
@@ -14,6 +14,6 @@
 
     <fx:Script source="app.as"/>
 
-    <display:GameDisplay id="gameDisplay"/>
+    <display:GameDisplay id="gameDisplay" x="50" y="50"/>
 
 </s:Application>

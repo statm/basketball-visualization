@@ -2,6 +2,7 @@ package statm.dev.basketballvisualization.data.entities
 {
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
+    import flash.utils.getTimer;
     import flash.utils.setInterval;
     import flash.utils.setTimeout;
     
@@ -9,6 +10,7 @@ package statm.dev.basketballvisualization.data.entities
     
     import statm.dev.basketballvisualization.data.io.GameReader;
     import statm.dev.basketballvisualization.events.GameReaderEvent;
+    import statm.dev.basketballvisualization.utils.StringUtils;
     import statm.dev.basketballvisualization.utils.log;
 
     public class Game extends EventDispatcher
@@ -29,9 +31,9 @@ package statm.dev.basketballvisualization.data.entities
         private var players:Vector.<Player>;
         private var playerDic:Dictionary;
         private var ball:Ball;
-		private var referees:Vector.<Referee>;
-		private var refDic:Dictionary;
-		private var gameClockList:Array;
+        private var referees:Vector.<Referee>;
+        private var refDic:Dictionary;
+        private var gameClockList:Array;
 
         internal var startTime:Number = -1;
 
@@ -40,9 +42,27 @@ package statm.dev.basketballvisualization.data.entities
             players = new Vector.<Player>();
             playerDic = new Dictionary();
             ball = new Ball();
-			referees = new Vector.<Referee>();
-			refDic = new Dictionary();
+            referees = new Vector.<Referee>();
+            refDic = new Dictionary();
+            gameClockList = new Array();
         }
+		
+		
+		//----------------------------------
+		//  game clock
+		//----------------------------------
+		private var _gameClock:Number = 0;
+		
+		[Bindable]
+		public function get gameClock():Number
+		{
+			return _gameClock;
+		}
+		
+		private function set gameClock(value:Number):void
+		{
+			_gameClock = value;
+		}
 
 
         //----------------------------------
@@ -74,6 +94,7 @@ package statm.dev.basketballvisualization.data.entities
             parseEntries(reader.getEntries());
             log("parse complete");
 
+            FlexGlobals.topLevelApplication.gameDisplay.setGame(this);
             FlexGlobals.topLevelApplication.gameDisplay.player0.setPlayer(players[0]);
             FlexGlobals.topLevelApplication.gameDisplay.player1.setPlayer(players[1]);
             FlexGlobals.topLevelApplication.gameDisplay.player2.setPlayer(players[2]);
@@ -88,8 +109,8 @@ package statm.dev.basketballvisualization.data.entities
             FlexGlobals.topLevelApplication.gameDisplay.ref0.setReferee(referees[0]);
             FlexGlobals.topLevelApplication.gameDisplay.ref1.setReferee(referees[1]);
             FlexGlobals.topLevelApplication.gameDisplay.ref2.setReferee(referees[2]);
-			
-            play();
+
+            loaded = true;
         }
 
 
@@ -102,8 +123,8 @@ package statm.dev.basketballvisualization.data.entities
             var frame:int;
             var playerObj:Object;
             var player:Player;
-			var refObj:Object;
-			var referee:Referee;
+            var refObj:Object;
+            var referee:Referee;
 
             for each (var entry:String in entries)
             {
@@ -146,21 +167,22 @@ package statm.dev.basketballvisualization.data.entities
 
                 // ball
                 ball.pushData(frame, entryObj.ball);
-				
-				// referees
-				for each (refObj in entryObj.refs)
-				{
-					if (!refDic[refObj[1]])
-					{
-						referee = new Referee(refObj[1]);
-						refDic[refObj[1]] = referee;
-						referees.push(referee);
-					}
-					
-					refDic[refObj[1]].pushData(frame, refObj[0]);
-				}
-				
-				// game clock
+
+                // referees
+                for each (refObj in entryObj.refs)
+                {
+                    if (!refDic[refObj[1]])
+                    {
+                        referee = new Referee(refObj[1]);
+                        refDic[refObj[1]] = referee;
+                        referees.push(referee);
+                    }
+
+                    refDic[refObj[1]].pushData(frame, refObj[0]);
+                }
+
+                // game clock
+                gameClockList[frame] = entryObj.game_clock;
             }
         }
 
@@ -170,15 +192,21 @@ package statm.dev.basketballvisualization.data.entities
         //----------------------------------
         private var playhead:int;
 
-        public function play():void
+        private var loaded:Boolean = false;
+		private var frame:int = 0;
+
+        public function pulse():void
         {
-            playhead = 0;
-            setInterval(updateGameObjects, 40);
+            if (loaded)
+			{
+				updateGameObjects();
+			}
         }
 
         private function updateGameObjects():void
         {
-            playhead += 5;
+            playhead += 10;
+            gameClock = gameClockList[playhead];
 
             for each (var player:Player in players)
             {
@@ -186,11 +214,11 @@ package statm.dev.basketballvisualization.data.entities
             }
 
             ball.update(playhead);
-			
-			for each (var ref:Referee in referees)
-			{
-				ref.update(playhead);
-			}
+
+            for each (var ref:Referee in referees)
+            {
+                ref.update(playhead);
+            }
         }
     }
 }
