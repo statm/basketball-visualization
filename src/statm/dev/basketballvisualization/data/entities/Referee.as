@@ -67,6 +67,15 @@ package statm.dev.basketballvisualization.data.entities
 				y = NaN;
 			}
 		}
+		
+		
+		//----------------------------------
+		//  validity
+		//----------------------------------
+		public function get isValid():Boolean
+		{
+			return !isNaN(x) && !isNaN(y);
+		}
 	}
 }
 

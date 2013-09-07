@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group 
-    x="{player.x * 10 - 10}" y="{player.y * 10 - 10}" width="20" height="20"
+    x="{player.x * 10 - width / 2}" y="{player.y * 10 - height / 2}" width="20" height="20"
+    visible="false"
     xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:mx="library://ns.adobe.com/flex/mx">
@@ -16,6 +17,7 @@
             public function setPlayer(player:Player):void
             {
                 this.player = player;
+                this.visible = (player != null);
             }
         ]]>
     </fx:Script>

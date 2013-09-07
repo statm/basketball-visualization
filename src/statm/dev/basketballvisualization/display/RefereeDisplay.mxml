@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group 
-	x="{referee.x * 10 - 7}" y="{referee.y * 10 - 7}" width="15" height="15"
+	x="{referee.x * 10 - width / 2}" y="{referee.y * 10 - height / 2}" width="15" height="15"
+	visible="false"
     xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:mx="library://ns.adobe.com/flex/mx">
@@ -13,6 +14,7 @@
             public function setReferee(referee:Referee):void
             {
                 this.referee = referee;
+				this.visible = (referee != null);
             }
         ]]>
     </fx:Script>

@@ -2,16 +2,14 @@ package statm.dev.basketballvisualization.data.entities
 {
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
-    import flash.utils.getTimer;
-    import flash.utils.setInterval;
-    import flash.utils.setTimeout;
-    
-    import mx.core.FlexGlobals;
-    
+
     import statm.dev.basketballvisualization.data.io.GameReader;
+    import statm.dev.basketballvisualization.events.GameEvent;
     import statm.dev.basketballvisualization.events.GameReaderEvent;
-    import statm.dev.basketballvisualization.utils.StringUtils;
     import statm.dev.basketballvisualization.utils.log;
+
+    [Event(name = "ready", type = "statm.dev.basketballvisualization.events.GameEvent")]
+    [Event(name = "update", type = "statm.dev.basketballvisualization.events.GameEvent")]
 
     public class Game extends EventDispatcher
     {
@@ -35,8 +33,6 @@ package statm.dev.basketballvisualization.data.entities
         private var refDic:Dictionary;
         private var gameClockList:Array;
 
-        internal var startTime:Number = -1;
-
         private function initData():void
         {
             players = new Vector.<Player>();
@@ -46,23 +42,72 @@ package statm.dev.basketballvisualization.data.entities
             refDic = new Dictionary();
             gameClockList = new Array();
         }
-		
-		
-		//----------------------------------
-		//  game clock
-		//----------------------------------
-		private var _gameClock:Number = 0;
-		
-		[Bindable]
-		public function get gameClock():Number
-		{
-			return _gameClock;
-		}
-		
-		private function set gameClock(value:Number):void
-		{
-			_gameClock = value;
-		}
+
+        public function getPlayer(index:int, type:int):Player
+        {
+            var currentIndex:int = 0;
+
+            for each (var player:Player in players)
+            {
+                if (player.isValid && player.type == type)
+                {
+                    if (currentIndex == index)
+                    {
+                        return player;
+                    }
+                    else
+                    {
+                        currentIndex++;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public function getReferee(index:int):Referee
+        {
+            var currentIndex:int = 0;
+
+            for each (var ref:Referee in referees)
+            {
+                if (ref.isValid)
+                {
+                    if (currentIndex == index)
+                    {
+                        return ref;
+                    }
+                    else
+                    {
+                        currentIndex++;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public function getBall():Ball
+        {
+            return ball;
+        }
+
+
+        //----------------------------------
+        //  game clock
+        //----------------------------------
+        private var _gameClock:Number = 0;
+
+        [Bindable]
+        public function get gameClock():Number
+        {
+            return _gameClock;
+        }
+
+        private function set gameClock(value:Number):void
+        {
+            _gameClock = value;
+        }
 
 
         //----------------------------------
@@ -89,28 +134,9 @@ package statm.dev.basketballvisualization.data.entities
 
         private function reader_completeHandler(event:GameReaderEvent):void
         {
-            log("load complete");
-
             parseEntries(reader.getEntries());
-            log("parse complete");
 
-            FlexGlobals.topLevelApplication.gameDisplay.setGame(this);
-            FlexGlobals.topLevelApplication.gameDisplay.player0.setPlayer(players[0]);
-            FlexGlobals.topLevelApplication.gameDisplay.player1.setPlayer(players[1]);
-            FlexGlobals.topLevelApplication.gameDisplay.player2.setPlayer(players[2]);
-            FlexGlobals.topLevelApplication.gameDisplay.player3.setPlayer(players[3]);
-            FlexGlobals.topLevelApplication.gameDisplay.player4.setPlayer(players[4]);
-            FlexGlobals.topLevelApplication.gameDisplay.player5.setPlayer(players[5]);
-            FlexGlobals.topLevelApplication.gameDisplay.player6.setPlayer(players[6]);
-            FlexGlobals.topLevelApplication.gameDisplay.player7.setPlayer(players[7]);
-            FlexGlobals.topLevelApplication.gameDisplay.player8.setPlayer(players[8]);
-            FlexGlobals.topLevelApplication.gameDisplay.player9.setPlayer(players[9]);
-            FlexGlobals.topLevelApplication.gameDisplay.ball.setBall(ball);
-            FlexGlobals.topLevelApplication.gameDisplay.ref0.setReferee(referees[0]);
-            FlexGlobals.topLevelApplication.gameDisplay.ref1.setReferee(referees[1]);
-            FlexGlobals.topLevelApplication.gameDisplay.ref2.setReferee(referees[2]);
-
-            loaded = true;
+            this.dispatchEvent(new GameEvent(GameEvent.READY));
         }
 
 
@@ -184,33 +210,101 @@ package statm.dev.basketballvisualization.data.entities
                 // game clock
                 gameClockList[frame] = entryObj.game_clock;
             }
+
+            endTime = entryObj.time;
+            totalFrame = frame;
         }
 
 
         //----------------------------------
         //  playback
         //----------------------------------
-        private var playhead:int;
+        private var _startTime:Number = -1;
 
-        private var loaded:Boolean = false;
-		private var frame:int = 0;
-
-        public function pulse():void
+        [Bindable]
+        public function get startTime():Number
         {
-            if (loaded)
-			{
-				updateGameObjects();
-			}
+            return _startTime;
         }
 
+        private function set startTime(value:Number):void
+        {
+            _startTime = value;
+        }
+
+        private var _endTime:Number = -1;
+
+        [Bindable]
+        public function get endTime():Number
+        {
+            return _endTime;
+        }
+
+        private function set endTime(value:Number):void
+        {
+            _endTime = value;
+        }
+
+        private var _totalFrame:int = 0;
+
+        [Bindable]
+        public function get totalFrame():int
+        {
+            return _totalFrame;
+        }
+
+        private function set totalFrame(value:int):void
+        {
+            _totalFrame = value;
+        }
+
+
+        //----------------------------------
+        //  playhead
+        //----------------------------------
+        private var _playhead:int;
+
+        [Bindable]
+        public function get playhead():int
+        {
+            return _playhead;
+        }
+
+        private function set playhead(value:int):void
+        {
+            _playhead = value;
+
+            if (_playhead > _totalFrame)
+            {
+                _playhead = 0;
+            }
+
+            if (!isNaN(gameClock) && !gameClockList[playhead])
+            {
+                log("timeout");
+            }
+
+            if (isNaN(gameClock) && gameClockList[playhead])
+            {
+                log("timeout over");
+            }
+
+            gameClock = gameClockList[playhead];
+
+            updateGameObjects();
+        }
+
+
+        //----------------------------------
+        //  update
+        //----------------------------------
         private function updateGameObjects():void
         {
-            playhead += 10;
-            gameClock = gameClockList[playhead];
+            _redrawNeeded = false;
 
             for each (var player:Player in players)
             {
-                player.update(playhead);
+                _redrawNeeded = player.update(playhead) || _redrawNeeded;
             }
 
             ball.update(playhead);
@@ -219,6 +313,19 @@ package statm.dev.basketballvisualization.data.entities
             {
                 ref.update(playhead);
             }
+
+            this.dispatchEvent(new GameEvent(GameEvent.UPDATE));
+        }
+
+
+        //----------------------------------
+        //  redrawNeeded
+        //----------------------------------
+        private var _redrawNeeded:Boolean = false;
+
+        public function get redrawNeeded():Boolean
+        {
+            return _redrawNeeded;
         }
     }
 }

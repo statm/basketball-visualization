@@ -1,5 +1,6 @@
 package statm.dev.basketballvisualization.data.entities
 {
+
     public class Player
     {
         private var id:int;
@@ -20,35 +21,35 @@ package statm.dev.basketballvisualization.data.entities
         //----------------------------------
         //  x
         //----------------------------------
-        private var _x:Number;
+        private var _x:Number = NaN;
 
         [Bindable]
         public function get x():Number
         {
             return _x;
         }
-		
-		private function set x(value:Number):void
-		{
-			_x = value;
-		}
+
+        private function set x(value:Number):void
+        {
+            _x = value;
+        }
 
 
         //----------------------------------
         //  y
         //----------------------------------
-        private var _y:Number;
+        private var _y:Number = NaN;
 
         [Bindable]
         public function get y():Number
         {
             return _y;
         }
-		
-		private function set y(value:Number):void
-		{
-			_y = value;
-		}
+
+        private function set y(value:Number):void
+        {
+            _y = value;
+        }
 
 
         //----------------------------------
@@ -71,18 +72,33 @@ package statm.dev.basketballvisualization.data.entities
         //----------------------------------
         //  update
         //----------------------------------
-        public function update(frame:int):void
+        public function update(frame:int):Boolean
         {
+            var dirty:Boolean;
+
             if (posList[frame])
             {
+                dirty = isNaN(x);
                 x = posList[frame][0];
                 y = posList[frame][1];
             }
             else
             {
+                dirty = !isNaN(x);
                 x = NaN;
                 y = NaN;
             }
+
+            return dirty;
         }
+		
+		
+		//----------------------------------
+		//  validity
+		//----------------------------------
+		public function get isValid():Boolean
+		{
+			return !isNaN(x) && !isNaN(y);
+		}
     }
 }

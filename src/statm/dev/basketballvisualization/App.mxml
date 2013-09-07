@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application 
     backgroundColor="#DEDEDE"
-	frameRate="50"
     minHeight="600"
     minWidth="1040"
     addedToStage="init()"
+    frameRate="50"
     xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:mx="library://ns.adobe.com/flex/mx"
@@ -14,6 +14,8 @@
 
     <fx:Script source="app.as"/>
 
-    <display:GameDisplay id="gameDisplay" x="50" y="50"/>
+    <display:GameDisplay id="gameDisplay"
+        horizontalCenter="0"
+        verticalCenter="0"/>
 
 </s:Application>
