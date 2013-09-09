@@ -26,7 +26,7 @@ private function init():void
 
 private function game_loadProgressHandler(event:GameEvent):void
 {
-    statusLabel.text = "Loading " + game.loadProgress + "%";
+    statusLabel.text = "Loading...";
 }
 
 private function game_readyHandler(event:GameEvent):void
