@@ -13,7 +13,6 @@
 			import org.apache.flex.collections.ArrayList;
 			
 			import statm.dev.basketballvisualization.data.entities.Game;
-			import statm.dev.basketballvisualization.utils.log;
 
             [Bindable]
             private var game:Game;

@@ -1,8 +1,5 @@
 import flash.events.Event;
-import flash.events.KeyboardEvent;
-import flash.ui.Keyboard;
 
-import spark.components.Alert;
 import spark.events.IndexChangeEvent;
 
 import statm.dev.basketballvisualization.analytic.AnalyticCore;
@@ -21,7 +18,7 @@ private function init():void
 {
     log("app init");
 
-    game = new Game("http://cbg.isi.edu/cbg-basketball.json");
+    game = new Game("cbg-basketball.json");
     game.addEventListener(GameEvent.READY, game_readyHandler);
     game.addEventListener(GameEvent.LOAD_PROGRESS, game_loadProgressHandler);
     game.loadGame();
