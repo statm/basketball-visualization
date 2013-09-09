@@ -4,6 +4,8 @@ package statm.dev.basketballvisualization.events
 
     public class GameEvent extends Event
     {
+		public static const LOAD_PROGRESS:String = "loadProgress";
+		
         public static const READY:String = "ready";
 
         public static const UPDATE:String = "update";

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Rect 
-    width="5" height="{ball.z * 25}"
+    width="5" height="{ball.z * Constants.COURT_HEIGHT / 2}"
+	visible="false"
     xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:mx="library://ns.adobe.com/flex/mx">
@@ -8,6 +9,7 @@
     <fx:Script>
         <![CDATA[
             import statm.dev.basketballvisualization.data.entities.Ball;
+            import statm.dev.basketballvisualization.utils.Constants;
 
             [Bindable]
             private var ball:Ball;
@@ -15,7 +17,7 @@
             public function setBall(ball:Ball):void
             {
                 this.ball = ball;
-                this.visible = ball.isValid;
+//                this.visible = ball.isValid;
             }
         ]]>
     </fx:Script>

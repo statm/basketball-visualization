@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer 
+    height="30"
+    xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx"
+    autoDrawBackground="false">
+
+    <fx:Script>
+        <![CDATA[
+            import statm.dev.basketballvisualization.data.entities.PlayerType;
+
+            override public function set data(value:Object):void
+            {
+                super.data = value;
+
+                if (data.shooter.type == PlayerType.HOME)
+                {
+                    teamColor.color = 0xFF9900;
+                }
+                else
+                {
+                    teamColor.color = 0x0066FF;
+                }
+            }
+        ]]>
+    </fx:Script>
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="hovered"/>
+    </s:states>
+
+    <s:Rect 
+        left="0" right="0" top="0" bottom="0">
+        <s:fill>
+            <s:SolidColor 
+                color.hovered="#CCCCCC"
+                color.normal="#FFFFFF"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:Rect 
+        width="10"
+        left="0" top="0" bottom="0">
+        <s:fill>
+            <s:SolidColor id="teamColor"/>
+        </s:fill>
+    </s:Rect>
+
+    <s:Label 
+        left="20"
+        fontSize="14"
+        verticalCenter="0"
+        text="{data}"/>
+
+    <s:Line 
+        left="0" right="0" bottom="0">
+        <s:stroke>
+            <s:SolidColorStroke color="#999999"/>
+        </s:stroke>
+    </s:Line>
+</s:ItemRenderer>

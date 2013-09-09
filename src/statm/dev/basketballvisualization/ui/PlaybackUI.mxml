@@ -8,7 +8,12 @@
 
     <fx:Script>
         <![CDATA[
-            import statm.dev.basketballvisualization.data.entities.Game;
+			import spark.events.IndexChangeEvent;
+			
+			import org.apache.flex.collections.ArrayList;
+			
+			import statm.dev.basketballvisualization.data.entities.Game;
+			import statm.dev.basketballvisualization.utils.log;
 
             [Bindable]
             private var game:Game;
@@ -29,19 +34,33 @@
                 game.stopScrub();
                 stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
             }
+
+            private function speedSelector_changeHandler(event:IndexChangeEvent):void
+            {
+				game.speed = parseInt(speedSelector.selectedItem.substring(0, speedSelector.selectedItem.length - 1));
+            }
         ]]>
     </fx:Script>
 
     <ui:PlayButton id="playButton"
         width="60"
         verticalCenter="0"
-        click="game.isPlaying ? game.stop() : game.play(1)"
+        click="game.isPlaying ? game.stop() : game.play()"
         game="{game}"
         skinClass="statm.dev.basketballvisualization.ui.skins.PlayButtonSkin"/>
 
+    <s:DropDownList id="speedSelector"
+        width="60" height="30"
+        left="70"
+        verticalCenter="0"
+        dataProvider="{new ArrayList(['1x', '2x', '4x', '8x'])}"
+        change="speedSelector_changeHandler(event)"
+        requireSelection="true"
+        skinClass="statm.dev.basketballvisualization.ui.skins.LiteDropDownListSkin"/>
+
     <ui:ScrubBar id="scrubber"
         height="20"
-        left="70" right="0"
+        left="140" right="0"
         verticalCenter="0"
         maximum="{game.totalFrame}"
         minimum="0"

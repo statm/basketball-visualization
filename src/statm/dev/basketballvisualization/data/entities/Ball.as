@@ -9,10 +9,15 @@ package statm.dev.basketballvisualization.data.entities
             this.posList = new Array();
         }
 
-        public function pushData(time:int, data:Object):void
+        public function pushData(frame:int, data:Object):void
         {
-            posList[time] = data;
+            posList[frame] = data;
         }
+		
+		public function getData(frame:int):Object
+		{
+			return posList[frame];
+		}
 
         //----------------------------------
         //  x
@@ -91,6 +96,26 @@ package statm.dev.basketballvisualization.data.entities
 		public function get isValid():Boolean
 		{
 			return !isNaN(x) && !isNaN(y);
+		}
+		
+		
+		//----------------------------------
+		//  shooting
+		//----------------------------------
+		private var _isShooting:Boolean = false;
+		
+		[Bindable]
+		public function get isShooting():Boolean
+		{
+			return _isShooting;
+		}
+		
+		public function set isShooting(value:Boolean):void
+		{
+			if (value != _isShooting)
+			{
+				_isShooting = value;
+			}
 		}
     }
 }

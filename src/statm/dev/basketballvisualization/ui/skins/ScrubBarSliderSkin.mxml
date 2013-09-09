@@ -45,7 +45,7 @@ HSliderThumbSkin and HSliderTrackSkin classes, respectively.
     -->
     <fx:Script>
         <![CDATA[
-			import statm.dev.basketballvisualization.utils.VisualizationUtils;
+			import statm.dev.basketballvisualization.utils.AnalyticUtils;
 
             /**
             *  @private
@@ -68,43 +68,6 @@ HSliderThumbSkin and HSliderTrackSkin classes, respectively.
         <s:State name="disabled"/>
     </s:states>
 
-    <fx:Declarations>
-        <!--- The tooltip used in the mx.controls.Slider control.
-               To customize the DataTip's appearance, create a custom HSliderSkin class.-->
-        <fx:Component id="dataTip">
-            <s:DataRenderer 
-                y="-34"
-                minHeight="24"
-                minWidth="40">
-                <s:Rect 
-                    left="0" right="0" top="0" bottom="0">
-                    <s:fill>
-                        <s:SolidColor 
-                            color="0x000000"
-                            alpha=".9"/>
-                    </s:fill>
-                    <s:filters>
-                        <s:DropShadowFilter 
-                            color="0x999999"
-                            angle="90"
-                            distance="3"/>
-                    </s:filters>
-                </s:Rect>
-                <s:Label id="labelDisplay"
-                    left="5" right="5" top="5" bottom="5"
-                    color="white"
-                    fontSize="11"
-                    fontWeight="normal"
-                    horizontalCenter="0"
-                    textAlign="center"
-                    verticalAlign="middle"
-                    verticalCenter="1"
-                    text="{data}">
-                </s:Label>
-            </s:DataRenderer>
-        </fx:Component>
-    </fx:Declarations>
-
     <!--- The default skin class is HSliderTrackSkin.
             @copy spark.components.supportClasses.TrackBase#track
             @see spark.skins.spark.HSliderTrackSkin -->
@@ -125,7 +88,7 @@ HSliderThumbSkin and HSliderTrackSkin classes, respectively.
 
     <s:BitmapImage 
         left="1" right="1" top="1" bottom="1"
-        source="{VisualizationUtils.generateTimeoutMap(hostComponent.game)}"/>
+        source="{AnalyticUtils.generateTimeoutMap(hostComponent.game)}"/>
 
     <!--- The default skin class is HSliderThumbSkin.
             @copy spark.components.supportClasses.TrackBase#thumb

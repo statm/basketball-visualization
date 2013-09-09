@@ -42,7 +42,7 @@
     <!-- border -->
     <s:Rect left="0" right="0" top="0" bottom="0" height="11">
         <s:fill>
-            <s:SolidColor color="#666666"/>
+            <s:SolidColor color="#BBBBBB"/>
         </s:fill>
     </s:Rect>
 	

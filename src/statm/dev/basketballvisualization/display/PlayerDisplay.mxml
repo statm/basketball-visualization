@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group 
-    x="{player.x * 10 - width / 2}" y="{player.y * 10 - height / 2}" width="20" height="20"
+    x="{player.x * Constants.MAGNIFY_RATIO - width / 2}" y="{player.y * Constants.MAGNIFY_RATIO - height / 2}" width="20" height="20"
     visible="false"
     xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
@@ -8,8 +8,9 @@
 
     <fx:Script>
         <![CDATA[
-            import statm.dev.basketballvisualization.data.entities.Player;
-            import statm.dev.basketballvisualization.data.entities.PlayerType;
+			import statm.dev.basketballvisualization.data.entities.Player;
+			import statm.dev.basketballvisualization.data.entities.PlayerType;
+			import statm.dev.basketballvisualization.utils.Constants;
 
             [Bindable]
             private var player:Player;
@@ -26,8 +27,8 @@
         left="0" right="0" top="0" bottom="0">
         <s:stroke>
             <s:SolidColorStroke 
-                color="#FFFFFF"
-                weight="2"/>
+                color="{(player.isShooting) ? 0xFF0000 : 0xFFFFFF}"
+                weight="3"/>
         </s:stroke>
         <s:fill>
             <s:SolidColor color="{(player.type == PlayerType.HOME) ? 0xFF9900 : 0x0066FF}"/>

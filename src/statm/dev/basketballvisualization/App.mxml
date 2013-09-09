@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application 
     backgroundColor="#DEDEDE"
-    minHeight="600"
-    minWidth="1040"
+    currentState="loading"
+    minHeight="580"
+    minWidth="1250"
     addedToStage="init()"
     frameRate="25"
     xmlns:fx="http://ns.adobe.com/mxml/2009"
@@ -22,22 +23,77 @@
         ]]>
     </fx:Script>
 
-    <!-- game display -->
-    <display:GameDisplay id="gameDisplay"
-        horizontalCenter="0"
-        verticalCenter="0"/>
+    <s:states>
+        <s:State name="loading"/>
+        <s:State name="running"/>
+    </s:states>
 
-    <!-- HUD label -->
-    <s:Label id="HUDLabel"
-        color="#666666"
-        fontSize="18"
+    <s:Group 
         horizontalCenter="0"
-        verticalCenter="-270"
-        text="{(game.isTimeout() ? 'Timeout' : (StringUtils.formatGameClock(game.gameClock)))
-				+ ' (frame ' + game.playhead + '/' + game.totalFrame + ')'}"/>
+        verticalCenter="0"
+        includeIn="loading">
+        <s:Label id="statusLabel"
+            color="#666666"
+            fontSize="18"/>
+    </s:Group>
 
-    <!-- progress bar -->
-    <ui:PlaybackUI id="playbackUI"
+    <s:Group 
         horizontalCenter="0"
-        verticalCenter="290"/>
+        verticalCenter="0"
+        includeIn="running">
+        <s:layout>
+            <s:HorizontalLayout gap="40"/>
+        </s:layout>
+
+        <s:Group id="groupLeft">
+            <s:layout>
+                <s:VerticalLayout horizontalAlign="center"/>
+            </s:layout>
+
+            <!-- HUD label -->
+            <s:Label id="HUDLabel"
+                color="#666666"
+                fontSize="18"
+                text="{(game.isTimeout() ? 'Timeout' : (StringUtils.formatGameClock(game.gameClock)))
+									+ ' (frame ' + game.playhead + '/' + game.totalFrame + ')'}"/>
+
+            <s:Group>
+                <!-- analytic layer -->
+                <s:Group id="analyticDisplay"
+                    width="940" height="500"
+                    visible="false"
+                    alpha=".2"/>
+
+                <!-- game display -->
+                <display:GameDisplay id="gameDisplay"/>
+            </s:Group>
+
+            <!-- progress bar -->
+            <ui:PlaybackUI id="playbackUI"/>
+        </s:Group>
+
+        <s:Group id="groupRight">
+            <s:layout>
+                <s:VerticalLayout horizontalAlign="center"/>
+            </s:layout>
+
+            <s:Label 
+                color="#666666"
+                fontSize="18"
+                text="Shots"/>
+
+            <s:List id="shotList"
+                width="230" height="515"
+                change="shotList_changeHanler(event)"
+                itemRenderer="statm.dev.basketballvisualization.ui.ShotListItemRenderer"
+                skinClass="statm.dev.basketballvisualization.ui.skins.LiteListSkin"/>
+
+            <s:CheckBox 
+                color="#666666"
+                fontSize="18"
+                label="Show all shots graph"
+				width="230"
+                selected="@{analyticDisplay.visible}"/>
+        </s:Group>
+    </s:Group>
 </s:Application>

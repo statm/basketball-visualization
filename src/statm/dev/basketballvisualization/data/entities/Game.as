@@ -2,18 +2,24 @@ package statm.dev.basketballvisualization.data.entities
 {
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
-
+    
+    import mx.collections.ArrayCollection;
+    
+    import statm.dev.basketballvisualization.analytic.ShotInfo;
     import statm.dev.basketballvisualization.data.io.GameReader;
     import statm.dev.basketballvisualization.events.GameEvent;
     import statm.dev.basketballvisualization.events.GameReaderEvent;
     import statm.dev.basketballvisualization.utils.log;
 
+    [Event(name = "loadProgress", type = "statm.dev.basketballvisualization.events.GameEvent")]
     [Event(name = "ready", type = "statm.dev.basketballvisualization.events.GameEvent")]
     [Event(name = "update", type = "statm.dev.basketballvisualization.events.GameEvent")]
     [Event(name = "play", type = "statm.dev.basketballvisualization.events.GameEvent")]
     [Event(name = "stop", type = "statm.dev.basketballvisualization.events.GameEvent")]
     [Event(name = "scrubStart", type = "statm.dev.basketballvisualization.events.GameEvent")]
     [Event(name = "scrubEnd", type = "statm.dev.basketballvisualization.events.GameEvent")]
+    [Event(name = "shotStart", type = "statm.dev.basketballvisualization.events.ShotEvent")]
+    [Event(name = "shotEnd", type = "statm.dev.basketballvisualization.events.ShotEvent")]
 
     public class Game extends EventDispatcher
     {
@@ -21,6 +27,8 @@ package statm.dev.basketballvisualization.data.entities
 
         public function Game(dataURL:String)
         {
+            log("data URL: " + dataURL);
+			
             this.dataURL = dataURL;
             initReader();
             initData();
@@ -37,6 +45,7 @@ package statm.dev.basketballvisualization.data.entities
         private var refDic:Dictionary;
         private var gameClockList:Array;
         private var timeoutFrameList:Vector.<int>;
+        public var shotList:ArrayCollection;
 
         private function initData():void
         {
@@ -47,15 +56,16 @@ package statm.dev.basketballvisualization.data.entities
             refDic = new Dictionary();
             gameClockList = new Array();
             timeoutFrameList = new Vector.<int>();
+            shotList = new ArrayCollection();
         }
 
-        public function getPlayer(index:int, type:int):Player
+        public function getPlayer(index:int, type:int, frame:int = -1):Player
         {
             var currentIndex:int = 0;
 
             for each (var player:Player in players)
             {
-                if (player.isValid && player.type == type)
+                if (player.isValid(frame == -1 ? playhead : frame) && player.type == type)
                 {
                     if (currentIndex == index)
                     {
@@ -120,10 +130,22 @@ package statm.dev.basketballvisualization.data.entities
             _gameClock = value;
         }
 
+        public function frameToGameClock(frame:int):Number
+        {
+            return gameClockList[frame];
+        }
+
 
         //----------------------------------
         //  loading
         //----------------------------------
+        private var _loadProgress:int = 0;
+
+        public function get loadProgress():int
+        {
+            return _loadProgress;
+        }
+
         private var _isReady:Boolean = false;
 
         public function get isReady():Boolean
@@ -149,7 +171,8 @@ package statm.dev.basketballvisualization.data.entities
 
         private function reader_progressHandler(event:GameReaderEvent):void
         {
-//            log("loading: " + int(reader.getProgress() * 100) + "%");
+            _loadProgress = int(reader.getProgress() * 100) + 1;
+            this.dispatchEvent(new GameEvent(GameEvent.LOAD_PROGRESS));
         }
 
         private function reader_completeHandler(event:GameReaderEvent):void
@@ -340,19 +363,11 @@ package statm.dev.basketballvisualization.data.entities
                 stop();
             }
 
-            if (!isNaN(gameClock) && !gameClockList[playhead])
-            {
-                log("timeout");
-            }
-
-            if (isNaN(gameClock) && gameClockList[playhead])
-            {
-                log("timeout over");
-            }
-
             gameClock = gameClockList[playhead];
 
             updateGameObjects();
+
+            checkShooting();
         }
 
         public function isTimeout(frame:int = -1):Boolean
@@ -379,6 +394,16 @@ package statm.dev.basketballvisualization.data.entities
         }
 
         private var _speed:int = 1;
+		
+		public function get speed():int
+		{
+			return _speed;
+		}
+		
+		public function set speed(value:int):void
+		{
+			_speed = value;
+		}
 
         private var _isScrubbing:Boolean = false;
 
@@ -390,14 +415,13 @@ package statm.dev.basketballvisualization.data.entities
             }
         }
 
-        public function play(speed:int = 1):void
+        public function play():void
         {
             if (!_isReady || _isScrubbing)
             {
                 return;
             }
-
-            _speed = speed;
+			
             isPlaying = true;
         }
 
@@ -414,6 +438,40 @@ package statm.dev.basketballvisualization.data.entities
         public function stopScrub():void
         {
             _isScrubbing = false;
+        }
+
+
+        //----------------------------------
+        //  shooting
+        //----------------------------------
+        private var isShooting:Boolean = false;
+        private var shootingPlayer:Player;
+
+        private function checkShooting():void
+        {
+            for each (var shootInfo:ShotInfo in shotList)
+            {
+                if (shootInfo.fromFrame <= playhead
+                    && shootInfo.toFrame >= playhead)
+                {
+                    isShooting = true;
+                    ball.isShooting = true;
+                    if (shootingPlayer)
+                    {
+                        shootingPlayer.isShooting = false;
+                    }
+                    shootingPlayer = shootInfo.shooter;
+                    shootingPlayer.isShooting = true;
+                    return;
+                }
+            }
+
+            ball.isShooting = false;
+            if (shootingPlayer)
+            {
+                shootingPlayer.isShooting = false;
+                shootingPlayer = null;
+            }
         }
     }
 }

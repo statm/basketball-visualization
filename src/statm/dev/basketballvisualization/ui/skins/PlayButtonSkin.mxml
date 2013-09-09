@@ -50,29 +50,6 @@
         <s:State name="disabled"/>
     </s:states>
 
-    <!-- layer 1: shadow -->
-    <!--- @private -->
-    <s:Rect id="shadow"
-        left="-1" right="-1" top="-1" bottom="-1"
-        radiusX="2">
-        <s:fill>
-            <s:LinearGradient rotation="90">
-                <s:GradientEntry 
-                    color="0x000000"
-                    color.down="0xFFFFFF"
-                    alpha="0.01"
-                    alpha.down="0"/>
-                <s:GradientEntry 
-                    color="0x000000"
-                    color.down="0xFFFFFF"
-                    alpha="0.07"
-                    alpha.down="0.5"/>
-            </s:LinearGradient>
-        </s:fill>
-    </s:Rect>
-
-    <!-- layer 2: fill -->
-    <!--- @private -->
     <s:Rect id="fill"
         left="1" right="1" top="1" bottom="1">
         <s:fill>
@@ -83,8 +60,6 @@
         </s:fill>
     </s:Rect>
 
-    <!-- layer 7: border - put on top of the fill so it doesn't disappear when scale is less than 1 -->
-    <!--- @private -->
     <s:Rect id="border"
         width="69" height="20"
         left="0" right="0" top="0" bottom="0">

@@ -3,18 +3,32 @@ package statm.dev.basketballvisualization.data.entities
 
     public class Player
     {
-        private var id:int;
+        private var _id:int;
         private var posList:Array;
 
         public function Player(id:int)
         {
-            this.id = id;
+            this._id = id;
             this.posList = new Array();
         }
 
         public function pushData(frame:int, data:Object):void
         {
             posList[frame] = data;
+        }
+
+        public function getData(frame:int):Object
+        {
+            return posList[frame];
+        }
+
+
+        //----------------------------------
+        //  id
+        //----------------------------------
+        public function get id():int
+        {
+            return _id;
         }
 
 
@@ -91,14 +105,34 @@ package statm.dev.basketballvisualization.data.entities
 
             return dirty;
         }
-		
-		
-		//----------------------------------
-		//  validity
-		//----------------------------------
-		public function get isValid():Boolean
-		{
-			return !isNaN(x) && !isNaN(y);
-		}
+
+
+        //----------------------------------
+        //  validity
+        //----------------------------------
+        public function isValid(frame:int):Boolean
+        {
+            return posList[frame] != null;
+        }
+
+
+        //----------------------------------
+        //  shooting
+        //----------------------------------
+        private var _isShooting:Boolean = false;
+
+        [Bindable]
+        public function get isShooting():Boolean
+        {
+            return _isShooting;
+        }
+
+        public function set isShooting(value:Boolean):void
+        {
+            if (value != _isShooting)
+            {
+                _isShooting = value;
+            }
+        }
     }
 }
